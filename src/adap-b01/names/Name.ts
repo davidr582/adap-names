@@ -45,19 +45,21 @@ export class Name {
      * The special characters in the data string are the default characters
      */
     public asDataString(): string {
-        return this.components.join(this.delimiter);
-}
+        return this.components
+            .map(c => this.escapeComponent(c, this.delimiter))
+            .join(this.delimiter);   
+    }
 
     public getComponent(i: number): string {
         if (i < 0) {throw new Error("i cant be negative")};
-        if (i >= this.getNoComponents()){"index out of bounds"};
+        if (i >= this.getNoComponents()){throw new RangeError("index out of bounds")};
         return this.components[i];
     }
 
     /** Expects that new Name component c is properly masked */
     public setComponent(i: number, c: string): void {
-        if (i < 0) {throw new Error("i cant be negative")};
-        if (i >= this.getNoComponents()){"index out of bounds"};
+        if (i < 0) {throw new RangeError("i cant be negative")};
+        if (i >= this.getNoComponents()){throw new RangeError("index out of bounds")};
         this.components[i] = c;
     }
 
@@ -68,8 +70,8 @@ export class Name {
 
     /** Expects that new Name component c is properly masked */
     public insert(i: number, c: string): void {
-        if (i < 0) {throw new Error("i cant be negative")};
-        if (i >= this.getNoComponents()){"index out of bounds"};
+        if (i < 0) {throw new RangeError("i cant be negative")};
+        if (i >= this.getNoComponents()){throw new RangeError("index out of bounds")};
         this.components.splice(i, 0, c);
     }
 
@@ -79,9 +81,15 @@ export class Name {
     }
 
     public remove(i: number): void {
-        if (i < 0) {throw new Error("i cant be negative")};
-        if (i >= this.getNoComponents()){"index out of bounds"};
+        if (i < 0) {throw new RangeError("i cant be negative")};
+        if (i >= this.getNoComponents()){throw new RangeError("index out of bounds")};
         this.components.splice(i, 1)
+    }
+
+    private escapeComponent(component: string, delimiter: string): string {
+        return component
+            .replace(new RegExp(`\\${ESCAPE_CHARACTER}`, 'g'), ESCAPE_CHARACTER + ESCAPE_CHARACTER)
+            .replace(new RegExp(`\\${delimiter}`, 'g'), ESCAPE_CHARACTER + delimiter);
     }
 
 }
