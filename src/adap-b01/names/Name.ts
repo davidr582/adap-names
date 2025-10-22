@@ -1,3 +1,5 @@
+import { escape } from "querystring";
+
 export const DEFAULT_DELIMITER: string = '.';
 export const ESCAPE_CHARACTER = '\\';
 
@@ -20,10 +22,12 @@ export class Name {
 
     /** Expects that all Name components are properly masked */
     constructor(other: string[], delimiter?: string) {
-        this.components = other;
+        this.components = [...other];
         if (delimiter != undefined){
-            this.delimiter = delimiter
-        }   
+            this.delimiter = delimiter;
+        }else{
+            this.delimiter = DEFAULT_DELIMITER;
+        }
     }
 
     /**
@@ -32,7 +36,6 @@ export class Name {
      * Users can vary the delimiter character to be used
      */
     public asString(delimiter: string = this.delimiter): string {
-        console.log(this.components.join(delimiter));
         return this.components.join(delimiter);
     }
 
@@ -42,8 +45,8 @@ export class Name {
      * The control characters in the data string are the default characters
      */
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
-    }
+        return this.components.join(this.delimiter);
+}
 
     public getComponent(i: number): string {
         if (i < 0) {throw new Error("i cant be negative")};
