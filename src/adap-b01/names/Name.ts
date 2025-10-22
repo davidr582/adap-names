@@ -1,5 +1,3 @@
-import { escape } from "querystring";
-
 export const DEFAULT_DELIMITER: string = '.';
 export const ESCAPE_CHARACTER = '\\';
 
