@@ -33,6 +33,7 @@ export class Name {
      * Special characters are not escaped (creating a human-readable string)
      * Users can vary the delimiter character to be used
      */
+    /** @methodtype conversion-method */
     public asString(delimiter: string = this.delimiter): string {
         return this.components.join(delimiter);
     }
@@ -42,12 +43,14 @@ export class Name {
      * Machine-readable means that from a data string, a Name can be parsed back in
      * The special characters in the data string are the default characters
      */
+    /** @methodtype conversion-method */
     public asDataString(): string {
         return this.components
             .map(c => this.escapeComponent(c, this.delimiter))
             .join(this.delimiter);   
     }
 
+    /** @methodtype get-method */
     public getComponent(i: number): string {
         if (i < 0) {throw new Error("i cant be negative")};
         if (i >= this.getNoComponents()){throw new RangeError("index out of bounds")};
@@ -55,18 +58,21 @@ export class Name {
     }
 
     /** Expects that new Name component c is properly masked */
+    /** @methodtype set-method */
     public setComponent(i: number, c: string): void {
         if (i < 0) {throw new RangeError("i cant be negative")};
         if (i >= this.getNoComponents()){throw new RangeError("index out of bounds")};
         this.components[i] = c;
     }
 
-     /** Returns number of components in Name instance */
-     public getNoComponents(): number {
+    /** Returns number of components in Name instance */
+    /** @methodtype get-method */
+    public getNoComponents(): number {
         return this.components.length;
     }
 
     /** Expects that new Name component c is properly masked */
+    /** @methodtype command-method */
     public insert(i: number, c: string): void {
         if (i < 0) {throw new RangeError("i cant be negative")};
         if (i >= this.getNoComponents()){throw new RangeError("index out of bounds")};
@@ -74,16 +80,19 @@ export class Name {
     }
 
     /** Expects that new Name component c is properly masked */
+    /** @methodtype command-method */
     public append(c: string): void {
         this.components.push(c);
     }
 
+    /** @methodtype command-method */
     public remove(i: number): void {
         if (i < 0) {throw new RangeError("i cant be negative")};
         if (i >= this.getNoComponents()){throw new RangeError("index out of bounds")};
         this.components.splice(i, 1)
     }
 
+    /**  @methodtype utility-method */
     private escapeComponent(component: string, delimiter: string): string {
         return component
             .replace(new RegExp(`\\${ESCAPE_CHARACTER}`, 'g'), ESCAPE_CHARACTER + ESCAPE_CHARACTER)
