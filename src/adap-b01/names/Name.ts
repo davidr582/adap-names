@@ -35,7 +35,9 @@ export class Name {
      */
     /** @methodtype conversion-method */
     public asString(delimiter: string = this.delimiter): string {
-        return this.components.join(delimiter);
+        return this.components
+            .map(c => this.escapeComponent(c, delimiter))
+            .join(delimiter);
     }
 
     /** 
@@ -45,9 +47,7 @@ export class Name {
      */
     /** @methodtype conversion-method */
     public asDataString(): string {
-        return this.components
-            .map(c => this.escapeComponent(c, this.delimiter))
-            .join(this.delimiter);   
+        return this.components.join(this.delimiter);  
     }
 
     /** @methodtype get-method */
