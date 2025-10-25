@@ -52,6 +52,7 @@ export class Name {
             .join(this.delimiter);  
     }
 
+    /** Returns properly masked component string */
     /** @methodtype get-method */
     public getComponent(i: number): string {
         if (i < 0) {throw new Error("i cant be negative")};
