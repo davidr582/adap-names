@@ -36,8 +36,8 @@ export class Name {
     /** @methodtype conversion-method */
     public asString(delimiter: string = this.delimiter): string {
         return this.components
-            .map(c => this.escapeComponent(c, delimiter))
-            .join(delimiter);
+            .map(c => this.unescapeComponent(c, delimiter))
+            .join(this.delimiter);  
     }
 
     /** 
@@ -47,7 +47,9 @@ export class Name {
      */
     /** @methodtype conversion-method */
     public asDataString(): string {
-        return this.components.join(this.delimiter);  
+        return this.components
+            .map(c => this.escapeComponent(c, this.delimiter))
+            .join(this.delimiter);  
     }
 
     /** @methodtype get-method */
@@ -97,6 +99,13 @@ export class Name {
         return component
             .replace(new RegExp(`\\${ESCAPE_CHARACTER}`, 'g'), ESCAPE_CHARACTER + ESCAPE_CHARACTER)
             .replace(new RegExp(`\\${delimiter}`, 'g'), ESCAPE_CHARACTER + delimiter);
+    }
+
+    /**  @methodtype utility-method */
+    private unescapeComponent(component: string, delimiter: string): string {
+        return component
+            .replace(new RegExp(`\\${ESCAPE_CHARACTER}\\${this.delimiter}`, 'g'), this.delimiter)
+            .replace(new RegExp(`\\${ESCAPE_CHARACTER}\\${ESCAPE_CHARACTER}`, 'g'), ESCAPE_CHARACTER);
     }
 
 }
