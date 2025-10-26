@@ -105,7 +105,7 @@ export class Name {
     /**  @methodtype utility-method */
     private unescapeComponent(component: string, delimiter: string): string {
         return component
-            .replace(new RegExp(`\\${ESCAPE_CHARACTER}\\${this.delimiter}`, 'g'), this.delimiter)
+            .replace(new RegExp(`\\${ESCAPE_CHARACTER}\\${this.delimiter}`, 'g'), delimiter)
             .replace(new RegExp(`\\${ESCAPE_CHARACTER}\\${ESCAPE_CHARACTER}`, 'g'), ESCAPE_CHARACTER);
     }
 
