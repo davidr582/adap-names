@@ -18,7 +18,7 @@ export class StringArrayName implements Name {
     public asString(delimiter: string = this.delimiter): string {
         return this.components
             .map(c => this.unescapeComponent(c, delimiter))
-            .join(this.delimiter); 
+            .join(delimiter); 
     }
 
     public asDataString(): string {
