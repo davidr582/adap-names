@@ -1,6 +1,7 @@
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
+import { InvalidStateException } from "../common/InvalidStateException";
 import { Node } from "./Node";
 import { Directory } from "./Directory";
-import { MethodFailedException } from "../common/MethodFailedException";
 
 enum FileState {
     OPEN,
@@ -17,16 +18,20 @@ export class File extends Node {
     }
 
     public open(): void {
-        // do something
+        InvalidStateException.assert(this.state !== FileState.DELETED, "file is deleted");
+        InvalidStateException.assert(this.state === FileState.CLOSED, "file already open");
+        this.state = FileState.OPEN;
     }
 
     public read(noBytes: number): Int8Array {
-        // read something
-        return new Int8Array();
+        IllegalArgumentException.assert(noBytes >= 0, "number of bytes must be non-negative");
+        InvalidStateException.assert(this.state === FileState.OPEN, "file must be open");
+        return new Int8Array(noBytes);
     }
 
     public close(): void {
-        // do something
+        InvalidStateException.assert(this.state === FileState.OPEN, "file must be open");
+        this.state = FileState.CLOSED;
     }
 
     protected doGetFileState(): FileState {

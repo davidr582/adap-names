@@ -1,3 +1,4 @@
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
 import { Name } from "../names/Name";
 import { Directory } from "./Directory";
 
@@ -7,17 +8,21 @@ export class Node {
     protected parentNode: Directory;
 
     constructor(bn: string, pn: Directory) {
+        IllegalArgumentException.assert(bn != null, "base name must not be null");
+        IllegalArgumentException.assert(pn != null, "parent node must not be null");
         this.doSetBaseName(bn);
         this.parentNode = pn; // why oh why do I have to set this
         this.initialize(pn);
     }
 
     protected initialize(pn: Directory): void {
+        IllegalArgumentException.assert(pn != null, "parent node must not be null");
         this.parentNode = pn;
         this.parentNode.addChildNode(this);
     }
 
     public move(to: Directory): void {
+        IllegalArgumentException.assert(to != null, "target directory must not be null");
         this.parentNode.removeChildNode(this);
         to.addChildNode(this);
         this.parentNode = to;
@@ -38,6 +43,7 @@ export class Node {
     }
 
     public rename(bn: string): void {
+        IllegalArgumentException.assert(bn != null, "base name must not be null");
         this.doSetBaseName(bn);
     }
 

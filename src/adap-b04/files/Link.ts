@@ -1,3 +1,5 @@
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
+import { InvalidStateException } from "../common/InvalidStateException";
 import { Node } from "./Node";
 import { Directory } from "./Directory";
 
@@ -18,6 +20,7 @@ export class Link extends Node {
     }
 
     public setTargetNode(target: Node): void {
+        IllegalArgumentException.assert(target != null, "target node must not be null");
         this.targetNode = target;
     }
 
@@ -32,7 +35,8 @@ export class Link extends Node {
     }
 
     protected ensureTargetNode(target: Node | null): Node {
-        const result: Node = this.targetNode as Node;
+        InvalidStateException.assert(target != null, "target node must not be null");
+        const result: Node = target as Node;
         return result;
     }
 }
