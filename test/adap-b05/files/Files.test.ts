@@ -34,8 +34,49 @@ function createFileSystem(): RootNode {
 describe("Basic naming test", () => {
   it("test name checking", () => {
     let fs: RootNode = createFileSystem();
-    // let ls: Node = [...fs.findNodes("ls")][0];
-    // expect(ls.getFullName().asString()).toBe(new StringName("/usr/bin/ls", '/'));
+    let ls: Node = [...fs.findNodes("ls")][0];
+    expect(ls.getFullName().asString()).toBe(new StringName("/usr/bin/ls", '/'));
+  });
+});
+
+describe("Traversal test", () => {
+  it("findNodes traverses child directories", () => {
+    const rn: RootNode = new RootNode();
+    const a: Directory = new Directory("a", rn);
+    const b: Directory = new Directory("b", a);
+    const target: File = new File("target", b);
+
+    const results: Set<Node> = rn.findNodes("target");
+    expect(results.has(target)).toBe(true);
+    expect(results.size).toBe(1);
+  });
+
+  it("findNodes finds multiple matches across branches", () => {
+    const rn: RootNode = new RootNode();
+    const etc: Directory = new Directory("etc", rn);
+    const varDir: Directory = new Directory("var", rn);
+    const log: Directory = new Directory("log", varDir);
+    const nginx: File = new File("config", etc);
+    const syslog: File = new File("config", log);
+
+    const matches: Set<Node> = rn.findNodes("config");
+    expect(matches.has(nginx)).toBe(true);
+    expect(matches.has(syslog)).toBe(true);
+    expect(matches.size).toBe(2);
+  });
+
+  it("findNodes descends several levels deep", () => {
+    const rn: RootNode = new RootNode();
+    const level1: Directory = new Directory("level1", rn);
+    const level2: Directory = new Directory("level2", level1);
+    const level3: Directory = new Directory("level3", level2);
+    const level4: Directory = new Directory("level4", level3);
+    const deepFile: File = new File("needle", level4);
+
+    const matches: Set<Node> = rn.findNodes("needle");
+    expect(matches.has(deepFile)).toBe(true);
+    expect(matches.size).toBe(1);
+    expect([...matches][0].getFullName().asString('/')).toBe(new StringName("/level1/level2/level3/level4/needle", '/'));
   });
 });
 
@@ -66,12 +107,23 @@ describe("Buggy setup test", () => {
       fs.findNodes("ls");
     } catch(er) {
       threwException = true;
-      // let ex: Exception = er as Exception;
-      // expect(ex).toBeInstanceOf(ServiceFailureException);
-      // expect(ex.hasTrigger()).toBe(true);
-      // let tx: Exception = ex.getTrigger();
-      // expect(tx).toBeInstanceOf(InvalidStateException);
+      let ex: Exception = er as Exception;
+      expect(ex).toBeInstanceOf(ServiceFailureException);
+      expect(ex.hasTrigger()).toBe(true);
+      let tx: Exception = ex.getTrigger();
+      expect(tx).toBeInstanceOf(InvalidStateException);
     }
     expect(threwException).toBe(true);
   });
+});
+
+describe("findNodes error escalation", () => {
+    it("should escalate InvalidStateException even if some matches were found", () => {
+        const root = new RootNode();
+        const usr = new Directory("usr", root);
+        const target = new File("x", usr);
+        const bad = new BuggyFile("x", usr);
+
+        expect(() => usr.findNodes("x")).toThrow(ServiceFailureException);
+    });
 });

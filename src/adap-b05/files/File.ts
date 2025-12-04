@@ -1,6 +1,8 @@
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
+import { InvalidStateException } from "../common/InvalidStateException";
+import { MethodFailedException } from "../common/MethodFailedException";
 import { Node } from "./Node";
 import { Directory } from "./Directory";
-import { MethodFailedException } from "../common/MethodFailedException";
 
 enum FileState {
     OPEN,
@@ -17,22 +19,25 @@ export class File extends Node {
     }
 
     public open(): void {
-        // do something
+        InvalidStateException.assert(this.state !== FileState.DELETED, "file is deleted");
+        InvalidStateException.assert(this.state === FileState.CLOSED, "file already open");
+        this.state = FileState.OPEN;
     }
 
     public read(noBytes: number): Int8Array {
-        let result: Int8Array = new Int8Array(noBytes);
-        // do something
+        IllegalArgumentException.assert(noBytes >= 0, "number of bytes must be non-negative");
+        InvalidStateException.assert(this.state === FileState.OPEN, "file must be open");
 
-        let tries: number = 0;
+        let result: Int8Array = new Int8Array(noBytes);
+
         for (let i: number = 0; i < noBytes; i++) {
             try {
                 result[i] = this.readNextByte();
             } catch(ex) {
-                tries++;
                 if (ex instanceof MethodFailedException) {
-                    // Oh no! What @todo?!
+                    throw ex;
                 }
+                throw ex;
             }
         }
 
@@ -40,11 +45,13 @@ export class File extends Node {
     }
 
     protected readNextByte(): number {
-        return 0; // @todo
+        MethodFailedException.assert(this.state === FileState.OPEN, "file must be open");
+        return 0;
     }
 
     public close(): void {
-        // do something
+        InvalidStateException.assert(this.state === FileState.OPEN, "file must be open");
+        this.state = FileState.CLOSED;
     }
 
     protected doGetFileState(): FileState {
