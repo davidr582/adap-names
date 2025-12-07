@@ -35,7 +35,7 @@ describe("Basic naming test", () => {
   it("test name checking", () => {
     let fs: RootNode = createFileSystem();
     let ls: Node = [...fs.findNodes("ls")][0];
-    expect(ls.getFullName().asString()).toBe(new StringName("/usr/bin/ls", '/'));
+    expect(ls.getFullName().asString()).toBe(new StringName("/usr/bin/ls", '/').asString());
   });
 });
 
@@ -76,7 +76,7 @@ describe("Traversal test", () => {
     const matches: Set<Node> = rn.findNodes("needle");
     expect(matches.has(deepFile)).toBe(true);
     expect(matches.size).toBe(1);
-    expect([...matches][0].getFullName().asString('/')).toBe(new StringName("/level1/level2/level3/level4/needle", '/'));
+    expect([...matches][0].getFullName().asString('/')).toBe(new StringName("/level1/level2/level3/level4/needle", '/').asString());
   });
 });
 
